@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Butterfly Beauty (HTML)</title>
+<style>
+  :root{
+    --pink:#ff4da6; --pink-2:#ff8ec5; --bg:#fff7fb; --card:#ffffff; --text:#2b2b2b; --muted:#6b6b6b;
+    --shadow: 0 10px 24px rgba(0,0,0,.08);
+    --radius: 18px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto}
+  .container{max-width:1100px;margin-inline:auto;padding:20px}
+  header{display:flex;align-items:center;justify-content:space-between;padding:10px 0}
+  .brand{display:flex;gap:12px;align-items:center}
+  h1{margin:0;font-size:28px}
+  nav{display:flex;gap:8px;flex-wrap:wrap}
+  nav button{border:none;background:#ffe6f3;color:#b01367;padding:10px 14px;border-radius:12px;cursor:pointer}
+  nav button.active{background:var(--pink);color:#fff}
+  .view{display:none;animation:fade .22s ease}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:.3;transform:translateY(6px)}}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px}
+  .imgwrap{border-radius:14px;overflow:hidden;aspect-ratio:1/1;background:#f9dbe9;display:grid;place-items:center}
+  .imgwrap img{width:100%;height:100%;object-fit:cover}
+  .title{font-weight:700}
+  .muted{color:var(--muted);font-size:13px}
+  .price{font-weight:800;margin-top:6px}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;padding:10px 14px;border-radius:12px;cursor:pointer}
+  .btn.primary{background:var(--pink);color:#fff}
+  .btn.soft{background:#ffe6f3;color:#b01367}
+  .btn.ghost{background:transparent;color:var(--pink);border:1px solid #ffd1e9}
+  .section{margin-top:16px}
+  .panel{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+  input,select,textarea{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #eee;background:#fff}
+  .paylist{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .paycard{padding:16px;border-radius:16px;background:#fff;border:1px dashed #ffd1e9;cursor:pointer;text-align:center}
+  .paycard.active{outline:3px solid var(--pink)}
+  footer{margin-top:28px;color:var(--muted);font-size:13px;text-align:center}
+  .chip{background:#fff2f8;border:1px solid #ffd1e9;color:#b01367;padding:6px 10px;border-radius:999px;font-size:12px}
+  .pill{background:#ffecf6;padding:4px 8px;border-radius:999px;font-size:12px}
+  .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#fff;border:1px solid #eee;border-bottom:2px solid #ffd1e9;border-radius:6px;padding:2px 6px;font-size:12px}
+  .list{margin:.2rem 0 .8rem 1.1rem}
+  table{width:100%;border-collapse:separate;border-spacing:0 10px}
+  th{font-weight:700;text-align:left;color:#6b6b6b;font-size:13px}
+  td{background:#fff;border-radius:12px;padding:12px;vertical-align:middle;box-shadow:var(--shadow)}
+  td img{width:64px;height:64px;border-radius:10px;object-fit:cover}
+  .qty{display:inline-flex;align-items:center;gap:8px}
+  .qty button{width:28px;height:28px;border-radius:8px;border:1px solid #ffd1e9;background:#fff;cursor:pointer}
+  .right{text-align:right}
+  /* points badge */
+  .points{background:#fff2f8;color:#b01367;padding:6px 10px;border-radius:999px;font-size:14px;margin-top:6px;display:inline-block}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <span style="font-size:30px">💄</span>
+        <div>
+          <h1>Butterfly Beauty </h1>
+          <div id="pointBadge" class="points">แต้มสะสม: 0</div>
+        </div>
+      </div>
+      <nav id="tabs">
+        <button data-view="home" class="active">หน้าแรก</button>
+        <button data-view="recommend">แนะนำสินค้า</button>
+        <button data-view="confirm">ยืนยัน</button>
+        <button data-view="payment">ชำระเงิน</button>
+        <button data-view="done">สำเร็จ</button>
+        <button data-view="contact">ติดต่อเรา</button>
+        <button data-view="manual">คู่มือการใช้งาน</button>
+      </nav>
+    </header>
+
+    <!-- HOME -->
+    <section id="home" class="view active">
+      <div class="panel">
+        <div class="row" style="justify-content:space-between">
+          <h2 style="margin:0">เลือกสินค้า</h2>
+          <div id="cartInfo" class="pill">ตะกร้า: 0 รายการ • 0 บาท</div>
+        </div>
+        <div id="productGrid" class="grid section"></div>
+      </div>
+    </section>
+
+    <!-- RECOMMEND -->
+    <section id="recommend" class="view">
+      <div class="panel">
+        <h2 style="margin-top:0">✨ ระบบแนะนำสินค้า</h2>
+        <div class="row section">
+          <div>
+            <label class="muted">ใส่เงื่อนไข (ตัวอย่าง: ผิวมัน, งบ &lt; 120, ไปเที่ยว, กลางคืน)</label>
+            <input id="condInput" placeholder="พิมพ์ 1 เงื่อนไข แล้วกด 'แนะนำเลย'">
+          </div>
+          <button class="btn primary" id="btnSuggest">แนะนำเลย</button>
+        </div>
+        <div id="suggestOut" class="section"></div>
+      </div>
+    </section>
+
+    <!-- CONFIRM (Cart + Rewards) -->
+    <section id="confirm" class="view">
+      <div class="panel">
+        <h2 style="margin-top:0">🛍️ ยืนยันรายการสั่งซื้อ</h2>
+
+        <!-- Rewards panel -->
+        <div class="panel" style="background:#fff7fb;border:1px dashed #ffd1e9;margin-bottom:16px">
+          <div class="row" style="justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+            <div>
+              <div class="title">🎁 แต้มสะสม & แลกของ</div>
+              <div class="muted">1 บาท = 1 แต้ม • แต้มปัจจุบัน: <b id="pointsNow">0</b> แต้ม</div>
+              <div id="rewardActiveNote" class="muted" style="margin-top:6px;display:none"></div>
+            </div>
+            <div class="row" style="gap:8px">
+              <button class="btn soft" id="redeem500">แลก 500 แต้ม = ลด 50฿</button>
+              <button class="btn soft" id="redeem1000">แลก 1000 แต้ม = ลด 120฿</button>
+              <button class="btn ghost" id="cancelRedeem" style="display:none">ยกเลิกการใช้สิทธิ์</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="confirmArea" class="section muted">ยังไม่มีสินค้าในตะกร้า</div>
+        <div class="row section">
+          <button class="btn soft" data-nav="home">⬅ เลือกสินค้าเพิ่ม</button>
+          <button class="btn primary" id="goPayment" disabled>ไปหน้าชำระเงิน</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAYMENT -->
+    <section id="payment" class="view">
+      <div class="panel">
+        <h2 style="margin-top:0">💳 เลือกช่องทางชำระเงิน</h2>
+        <div class="paylist section" id="payList"></div>
+        <div id="paySummary" class="section"></div>
+        <div class="row section">
+          <button class="btn soft" data-nav="confirm">⬅ กลับ</button>
+          <button class="btn primary" id="doPay" disabled>ชำระเงิน</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- DONE -->
+    <section id="done" class="view">
+      <div class="panel" style="text-align:center">
+        <h2>🎉 ชำระเงินสำเร็จ</h2>
+        <p id="doneText" class="section"></p>
+        <p id="pointsEarned" style="color:#b01367;font-weight:700"></p>
+        <div class="section">
+          <button class="btn primary" data-nav="home">กลับหน้าแรก</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="view">
+      <div class="panel">
+        <h2 style="margin-top:0">📞 ติดต่อเรา / แจ้งปัญหา</h2>
+        <p class="muted">มีข้อเสนอแนะหรือพบปัญหาในการใช้งานตู้ Butterfly Beauty สามารถติดต่อได้ที่</p>
+        <p style="font-size:20px;margin:8px 0"><strong>โทร: 088-225-3303</strong></p>
+        <div class="section">
+          <label class="muted">รายละเอียดปัญหา (ตัวอย่าง: กดซื้อไม่ได้, รูปไม่ขึ้น ฯลฯ)</label>
+          <textarea id="msgBox" rows="5" placeholder="พิมพ์รายละเอียดที่นี่..."></textarea>
+        </div>
+        <div class="row section">
+          <input id="userName" placeholder="ชื่อผู้ติดต่อ (ไม่บังคับ)">
+          <input id="userPhone" placeholder="เบอร์โทรติดต่อกลับ (ไม่บังคับ)">
+        </div>
+        <button class="btn primary" id="sendMsg">ส่งข้อความ</button>
+        <p id="sentNote" class="muted" style="margin-top:10px"></p>
+      </div>
+    </section>
+
+    <!-- MANUAL -->
+    <section id="manual" class="view">
+      <div class="panel">
+        <h2 style="margin-top:0">📘 คู่มือการใช้งาน Butterfly Beauty</h2>
+        <h3>1) วิธีใช้งานสำหรับผู้ซื้อ</h3>
+        <ul class="list">
+          <li>ไปที่แท็บ <b>หน้าแรก</b> → เลือกสินค้าที่ต้องการ</li>
+          <li>ตรวจสอบในหน้า <b>ยืนยัน</b> → กด “ไปหน้าชำระเงิน”</li>
+          <li>เลือกวิธีชำระเงินในหน้า <b>ชำระเงิน</b> → กด “ชำระเงิน”</li>
+          <li>ระบบจะแสดงหน้า <b>สำเร็จ</b> เพื่อรับสินค้า </li>
+        </ul>
+
+        <h3>2) ระบบแนะนำสินค้า (Rule-based)</h3>
+        <ul class="list">
+          <li>ใส่เงื่อนไขในหน้า <b>แนะนำสินค้า</b> เช่น “ผิวมัน”, “งบ &lt; 120”, “กลางคืน”, “ไปเที่ยว”</li>
+        </ul>
+
+        <h3>3) ช่องทางติดต่อ</h3>
+        <p>โทรศัพท์: <b>088-225-3303</b> (ดูได้ในแท็บ “ติดต่อเรา” เช่นกัน)</p>
+      </div>
+    </section>
+
+    <footer>© 2025 Butterfly Beauty • HTML Demo</footer>
+  </div>
+
+<script>
+/* ----------------------- Data ----------------------------------------- */
+const initialProducts = [
+  {name:"ลิปมัน Meow Pink", price:59,  category:"ริมฝีปาก", img:"https://www.cutepress.com/pub/media/catalog/product/cache/8bcb7669b359307340d2dd48787afbce/p/r/product_pic_glow_to_go_-_airy_matte_-_first_step-a-11.jpg"},
+  {name:"ลิปสติก Velvet Kiss", price:149, category:"ริมฝีปาก", img:"https://img.wongnai.com/p/1920x0/2023/05/08/051680b1d23a4709919b3dfbfdce7e0c.jpg"},
+  {name:"รองพื้น AirFit", price:199, category:"หน้า", img:"https://mistinecosmetics.com/wp-content/uploads/2022/02/19222_2-1.png"},
+  {name:"แป้งพัฟ GlowUp", price:179, category:"หน้า", img:"https://img.wongnai.com/p/1920x0/2023/05/17/69050a48501947dfb8a4b415f1516b13.jpg"},
+  {name:"มาสคาร่า CatEye", price:129, category:"ดวงตา", img:"https://www.priao.co.th/pub/media/catalog/product/cache/925480c6ee4fcbd55491f9ebd68ec9b6/8/8/8850434020165.jpg"},
+  {name:"อายแชโดว์ SoftMeow", price:169, category:"ดวงตา", img:"https://dh.lnwfile.com/_/dh/_raw/y7/bt/ug.jpg"},
+  {name:"บลัชออน Peachy", price:139, category:"แก้ม", img:"https://image.makewebcdn.com/makeweb/m_1920x0/pyuHEt3NP/GCB/GCB_b_3.jpg?v=202405291424"},
+  {name:"น้ำหอม Mini Bloom", price:89,  category:"น้ำหอม", img:"https://image.makewebcdn.com/makeweb/m_1920x0/YMncM4r9l/Perfume/Floral_Mille_Feuille_Paris_Patisserie_Parfume.jpg?v=202405291424"},
+  {name:"คลีนซิ่งโฟม FreshFace", price:99,  category:"ล้างหน้า", img:"https://dh.lnwfile.com/_/dh/_raw/gn/kw/on.jpg"},
+  {name:"โทนเนอร์ Balance", price:119, category:"บำรุงผิว", img:"https://medias.watsons.co.th/publishing/WTCTH-294400-front-zoom.jpg?version=1733773962"},
+];
+
+const RULES = [
+  ["ผิวมัน","หน้า","รองพื้น AirFit"],
+  ["ผิวแห้ง","หน้า","แป้งพัฟ GlowUp"],
+  ["ผิวผสม","หน้า","โทนเนอร์ Balance"],
+  ["ผิวแพ้ง่าย","ล้างหน้า","คลีนซิ่งโฟม FreshFace"],
+  ["ผิวหมองคล้ำ","แก้ม","บลัชออน Peachy"],
+  ["งบ < 100",null,"ลิปมัน Meow Pink"],
+  ["งบ < 120",null,"โทนเนอร์ Balance"],
+  ["งบ < 150",null,"มาสคาร่า CatEye"],
+  ["งบ < 200",null,"รองพื้น AirFit"],
+  ["งบ > 200",null,"ลิปสติก Velvet Kiss"],
+  ["ออกงานกลางคืน",null,"ลิปสติก Velvet Kiss"],
+  ["เรียน",null,"ลิปมัน Meow Pink"],
+  ["ทำงาน",null,"รองพื้น AirFit"],
+  ["ไปเที่ยว",null,"น้ำหอม Mini Bloom"],
+  ["ออกกำลังกาย",null,"คลีนซิ่งโฟม FreshFace"],
+  ["ริมฝีปาก",null,"ลิปมัน Meow Pink"],
+  ["ดวงตา",null,"มาสคาร่า CatEye"],
+  ["แก้ม",null,"บลัชออน Peachy"],
+  ["หน้า",null,"รองพื้น AirFit"],
+  ["น้ำหอม",null,"น้ำหอม Mini Bloom"],
+  ["อากาศร้อน",null,"โทนเนอร์ Balance"],
+  ["อากาศหนาว",null,"ลิปมัน Meow Pink"],
+  ["ฝนตก",null,"มาสคาร่า CatEye"],
+  ["กลางวัน",null,"รองพื้น AirFit"],
+  ["กลางคืน",null,"ลิปสติก Velvet Kiss"],
+  ["สดใส",null,"บลัชออน Peachy"],
+  ["จริงจัง",null,"รองพื้น AirFit"],
+  ["มั่นใจ",null,"ลิปสติก Velvet Kiss"],
+  ["อ่อนโยน",null,"โทนเนอร์ Balance"],
+  ["ผ่อนคลาย",null,"น้ำหอม Mini Bloom"],
+];
+
+/* ----------------------- State ---------------------------------------- */
+let products = initialProducts.map((p, i)=>({...p, id:i}));
+let cart = [];                   // [{id, name, price, img, qty}]
+let payMethod = null;
+
+/* แต้มสะสม */
+const POINTS_KEY = "bb_points";
+let points = Number(localStorage.getItem(POINTS_KEY) || 0);
+
+/* สิทธิ์แลกแต้มที่กำลังใช้งานอยู่ */
+let activeReward = null;         // {costPoints: number, discount: number, label: string}
+
+/* ----------------------- Helpers -------------------------------------- */
+const $ = (sel, el=document)=>el.querySelector(sel);
+const $$ = (sel, el=document)=>[...el.querySelectorAll(sel)];
+const toTHB = n => Number(n).toLocaleString('th-TH') + " บาท";
+
+function navigate(view){
+  $$(".view").forEach(v=>v.classList.remove("active"));
+  $("#"+view).classList.add("active");
+  $$("#tabs button").forEach(b=>b.classList.toggle("active", b.dataset.view===view));
+  if(view==="confirm") { renderCart(); updateRewardUI(); }
+  if(view==="payment") { renderPay(); renderPaySummary(); }
+}
+
+function cartCount(){ return cart.reduce((a,c)=>a+c.qty,0); }
+function cartSubTotal(){ return cart.reduce((a,c)=>a+c.qty*c.price,0); }
+function cartDiscount(){ return activeReward ? Math.min(activeReward.discount, cartSubTotal()) : 0; }
+function cartGrandTotal(){ return Math.max(0, cartSubTotal() - cartDiscount()); }
+
+function updateCartInfo(){
+  $("#cartInfo").textContent = `ตะกร้า: ${cartCount()} รายการ • ${toTHB(cartGrandTotal())}`;
+  $("#goPayment").disabled = cart.length===0;
+  $("#doPay").disabled = (payMethod===null || cart.length===0);
+}
+
+function updatePointsUI(){
+  $("#pointBadge").textContent = `แต้มสะสม: ${points}`;
+  $("#pointsNow").textContent = points;
+  localStorage.setItem(POINTS_KEY, points);
+}
+
+function updateRewardUI(){
+  const note = $("#rewardActiveNote");
+  const cancelBtn = $("#cancelRedeem");
+  if(activeReward){
+    note.style.display = "block";
+    note.innerHTML = `ใช้สิทธิ์: <b>${activeReward.label}</b> (หัก ${activeReward.costPoints} แต้ม) • ส่วนลด <b>${toTHB(activeReward.discount)}</b>`;
+    cancelBtn.style.display = "inline-flex";
+  }else{
+    note.style.display = "none";
+    cancelBtn.style.display = "none";
+  }
+}
+
+/* ----------------------- Products (Home) ------------------------------- */
+function renderProducts(){
+  const grid = $("#productGrid"); grid.innerHTML = "";
+  products.forEach(p=>{
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="imgwrap">${p.img?`<img alt="${p.name}" src="${p.img}">`:`<div style="font-size:46px">🛍️</div>`}</div>
+      <div class="title" style="margin-top:10px">${p.name}</div>
+      <div class="row" style="justify-content:space-between;margin-top:6px">
+        <span class="muted">${p.category}</span>
+        <span class="price">${toTHB(p.price)}</span>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn soft" data-add="${p.id}">เพิ่มลงตะกร้า</button>
+      </div>`;
+    grid.appendChild(card);
+  });
+
+  grid.querySelectorAll("[data-add]").forEach(btn=>{
+    btn.onclick = ()=>{
+      const id = Number(btn.dataset.add);
+      const prod = products.find(x=>x.id===id);
+      const found = cart.find(x=>x.id===id);
+      if(found) found.qty += 1;
+      else cart.push({id:prod.id, name:prod.name, price:prod.price, img:prod.img, qty:1});
+      updateCartInfo();
+    };
+  });
+}
+
+/* ----------------------- Recommend ------------------------------------ */
+function suggestProduct(cond){
+  const c = (cond || "").trim();
+  const matched = RULES.filter(r=>c.includes(r[0]));
+  if(matched.length===0) return products[0];
+  const name = matched[Math.floor(Math.random()*matched.length)][2];
+  return products.find(p=>p.name.includes(name)) || products[0];
+}
+$("#btnSuggest").onclick = ()=>{
+  const cond = $("#condInput").value;
+  const prod = suggestProduct(cond);
+  $("#suggestOut").innerHTML = `
+    <div class="row" style="align-items:flex-start">
+      <div class="imgwrap" style="width:140px">${prod.img?`<img src="${prod.img}">`:`<div style="font-size:40px">✨</div>`}</div>
+      <div>
+        <div class="title">แนะนำ: ${prod.name}</div>
+        <div class="muted">หมวด: ${prod.category}</div>
+        <div class="price" style="margin-top:6px">${toTHB(prod.price)}</div>
+        <div class="section row">
+          <button class="btn primary" id="pickSuggested">เพิ่มลงตะกร้า</button>
+          <button class="btn ghost" data-nav="confirm">ดูตะกร้า</button>
+        </div>
+      </div>
+    </div>`;
+  $("#pickSuggested").onclick = ()=>{
+    const found = cart.find(x=>x.id===prod.id);
+    if(found) found.qty += 1; else cart.push({id:prod.id,name:prod.name,price:prod.price,img:prod.img,qty:1});
+    updateCartInfo();
+  };
+};
+
+/* ----------------------- Rewards (Redeem) ------------------------------ */
+function tryRedeem(costPoints, discount, label){
+  if(cart.length===0){ alert("ใส่สินค้าในตะกร้าก่อนจ้า"); return; }
+  if(activeReward){ alert("กำลังใช้สิทธิ์อยู่แล้วค่ะ (กดยกเลิกได้)"); return; }
+  if(points < costPoints){ alert("แต้มไม่พอสำหรับสิทธิ์นี้"); return; }
+
+  // หักแต้มและบันทึกสิทธิ์
+  points -= costPoints;
+  activeReward = {costPoints, discount, label};
+  updatePointsUI();
+  updateRewardUI();
+  renderCart();
+  renderPaySummary();
+  updateCartInfo();
+}
+
+function cancelRedeem(){
+  if(!activeReward) return;
+  // คืนแต้ม
+  points += activeReward.costPoints;
+  activeReward = null;
+  updatePointsUI();
+  updateRewardUI();
+  renderCart();
+  renderPaySummary();
+  updateCartInfo();
+}
+
+$("#redeem500").onclick = ()=> tryRedeem(500, 50, "แลก 500 แต้ม = ลด 50฿");
+$("#redeem1000").onclick = ()=> tryRedeem(1000, 120, "แลก 1000 แต้ม = ลด 120฿");
+$("#cancelRedeem").onclick = cancelRedeem;
+
+/* ----------------------- Confirm (Cart page) --------------------------- */
+function renderCart(){
+  const area = $("#confirmArea");
+  if(cart.length===0){
+    area.classList.add("muted");
+    area.innerHTML = "ยังไม่มีสินค้าในตะกร้า";
+    $("#goPayment").disabled = true;
+    return;
+  }
+  area.classList.remove("muted");
+
+  let html = `
+    <table>
+      <thead>
+        <tr><th>สินค้า</th><th>ราคา</th><th>จำนวน</th><th class="right">รวม</th><th></th></tr>
+      </thead>
+      <tbody>
+  `;
+  cart.forEach(item=>{
+    html += `
+      <tr>
+        <td>
+          <div class="row" style="align-items:center">
+            <img src="${item.img || ''}" alt="" />
+            <div style="margin-left:10px">
+              <div class="title">${item.name}</div>
+              <div class="muted">${products.find(p=>p.id===item.id)?.category || ''}</div>
+            </div>
+          </div>
+        </td>
+        <td>${toTHB(item.price)}</td>
+        <td>
+          <div class="qty">
+            <button data-dec="${item.id}">−</button>
+            <span>${item.qty}</span>
+            <button data-inc="${item.id}">+</button>
+          </div>
+        </td>
+        <td class="right"><strong>${toTHB(item.qty * item.price)}</strong></td>
+        <td class="right">
+          <button class="btn ghost" data-del="${item.id}">ลบ</button>
+        </td>
+      </tr>
+    `;
+  });
+  html += `
+      </tbody>
+    </table>
+    <div style="margin-top:12px">
+      <div class="row" style="justify-content:space-between;align-items:flex-end">
+        <button class="btn ghost" id="clearCart">ล้างตะกร้าทั้งหมด</button>
+        <div style="text-align:right">
+          <div>ยอดสินค้า: <b>${toTHB(cartSubTotal())}</b></div>
+          ${activeReward ? `<div>ส่วนลดสิทธิ์: <b>- ${toTHB(cartDiscount())}</b></div>` : ``}
+          <div class="title">ยอดสุทธิ: ${toTHB(cartGrandTotal())}</div>
+        </div>
+      </div>
+    </div>
+  `;
+  area.innerHTML = html;
+
+  // bind qty & delete
+  $$("#confirmArea [data-inc]").forEach(b=>b.onclick=()=>{ const it=cart.find(x=>x.id==b.dataset.inc); it.qty++; afterCartChange(); });
+  $$("#confirmArea [data-dec]").forEach(b=>b.onclick=()=>{ const it=cart.find(x=>x.id==b.dataset.dec); it.qty=Math.max(1,it.qty-1); afterCartChange(); });
+  $$("#confirmArea [data-del]").forEach(b=>b.onclick=()=>{ cart = cart.filter(x=>x.id!=b.dataset.del); afterCartChange(); });
+  $("#clearCart").onclick = ()=>{ if(confirm("ล้างตะกร้าทั้งหมด?")){ cart=[]; afterCartChange(); } };
+
+  $("#goPayment").disabled = cart.length===0;
+}
+
+function afterCartChange(){
+  // ถ้าตะกร้ากลายเป็น 0 ให้ยกเลิกสิทธิ์และคืนแต้มอัตโนมัติ
+  if(cart.length===0 && activeReward){ cancelRedeem(); }
+  renderCart();
+  renderPaySummary();
+  updateCartInfo();
+}
+
+/* ----------------------- Tabs events ---------------------------------- */
+$("#tabs").addEventListener("click", e=>{
+  if(e.target.tagName!=="BUTTON") return;
+  navigate(e.target.dataset.view);
+});
+
+/* ----------------------- Payment ------------------------------------- */
+const PAY_METHODS = [
+  {id:"cash", label:"เงินสด/เหรียญ"},
+  {id:"qr",   label:"QR พร้อมเพย์"},
+  {id:"card", label:"บัตรดิจิทัล"},
+];
+
+function renderPay(){
+  const wrap = $("#payList");
+  wrap.innerHTML = "";
+  payMethod = null;
+  PAY_METHODS.forEach(m=>{
+    const div = document.createElement("div");
+    div.className = "paycard";
+    div.dataset.id = m.id;
+    div.innerHTML = `<div style="font-size:28px">${m.id==="qr"?"📱":m.id==="card"?"💳":"💵"}</div>
+                     <div style="margin-top:8px">${m.label}</div>`;
+    div.onclick = ()=>{
+      payMethod = m.id;
+      $$(".paycard", wrap).forEach(c=>c.classList.remove("active"));
+      div.classList.add("active");
+      $("#doPay").disabled = cart.length===0 ? true : false;
+    };
+    wrap.appendChild(div);
+  });
+}
+
+function renderPaySummary(){
+  const box = $("#paySummary");
+  if(cart.length===0){ box.innerHTML=""; return; }
+  box.innerHTML = `
+    <div class="panel" style="margin-top:12px">
+      <div>ยอดสินค้า: <b>${toTHB(cartSubTotal())}</b></div>
+      ${activeReward ? `<div>ส่วนลดสิทธิ์: <b>- ${toTHB(cartDiscount())}</b> <span class="muted">(${activeReward.label})</span></div>` : ``}
+      <div class="title">ยอดสุทธิที่ต้องชำระ: ${toTHB(cartGrandTotal())}</div>
+    </div>
+  `;
+}
+
+$("#goPayment").onclick = ()=>{
+  navigate("payment");
+};
+
+$("#doPay").onclick = ()=>{
+  if(cart.length===0) return alert("ยังไม่มีสินค้าในตะกร้า");
+  if(!payMethod) return alert("โปรดเลือกช่องทางชำระเงิน");
+
+  const summary = cart.map(i=>`${i.name} x ${i.qty}`).join(", ");
+  const totalPay = cartGrandTotal();
+
+  // คำนวณแต้มที่ได้รับจากยอดสุทธิ
+  const earned = Math.max(0, Math.floor(totalPay)); // 1 บาท = 1 แต้ม
+  points += earned;
+  updatePointsUI();
+
+  navigate("done");
+  $("#doneText").innerHTML = `รับสินค้า: <strong>${summary}</strong><br>ยอดสุทธิ: <strong>${toTHB(totalPay)}</strong><br>วิธีชำระเงิน: <strong>${PAY_METHODS.find(p=>p.id===payMethod).label}</strong>`;
+  $("#pointsEarned").textContent = `🎁 ได้รับแต้มเพิ่ม ${earned} แต้ม (รวม ${points} แต้ม)`;
+
+  // รีเซ็ตสถานะ
+  cart = [];
+  payMethod = null;
+  activeReward = null;
+  renderPay();
+  renderPaySummary();
+  updateCartInfo();
+  updateRewardUI();
+};
+
+/* ----------------------- Contact ------------------------------------- */
+$("#sendMsg").onclick = ()=>{
+  const msg = ($("#msgBox").value || "").trim();
+  const name = ($("#userName").value || "").trim();
+  const phone = ($("#userPhone").value || "").trim();
+  if(!msg){ alert("กรุณาพิมพ์รายละเอียดปัญหาก่อนค่ะ"); return; }
+  $("#sentNote").textContent = `ส่งข้อความเรียบร้อย ขอบคุณค่ะ เราจะติดต่อกลับทางโทร ${phone || "088-225-3303"} `;
+  $("#msgBox").value = ""; $("#userName").value = ""; $("#userPhone").value = "";
+};
+
+/* ----------------------- Boot ---------------------------------------- */
+renderProducts();
+updateCartInfo();
+updatePointsUI();
+</script>
+</body>
+</html>
+
+
+
+
+
